@@ -5,7 +5,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/kdtree/kdtree_flann.h>
-//#include <pcl/features/from_meshes.h>
+// #include <pcl/features/from_meshes.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/features/fpfh_omp.h> 
 #include <pcl/registration/correspondence_estimation.h>
@@ -300,7 +300,9 @@ float CRegistration<PointT>::calOverlap(const typename pcl::PointCloud<PointT>::
 	float overlap_ratio;
 
 	pcl::KdTreeFLANN<PointT> kdtree;
-	kdtree.setInputCloud(Cloud2);
+	
+	if(!Cloud2->empty())
+		kdtree.setInputCloud(Cloud2);
 
 	std::vector<int> pointIdxRadiusSearch;
 	std::vector<float> pointRadiusSquaredDistance;
@@ -379,7 +381,8 @@ void CRegistration<PointT>::compute_fpfh_feature(const typename pcl::PointCloud<
 	// Estimate FPFH Feature
 	pcl::FPFHEstimationOMP<PointT, pcl::Normal, pcl::FPFHSignature33> est_fpfh;
 	est_fpfh.setNumberOfThreads(4);
-	est_fpfh.setInputCloud(input_cloud);
+	if(!input_cloud->empty())
+		est_fpfh.setInputCloud(input_cloud);
 	est_fpfh.setInputNormals(cloud_normal);
 	typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
 	est_fpfh.setSearchMethod(tree);
